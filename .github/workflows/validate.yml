@@ -1,0 +1,41 @@
+name: Validate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+
+      - name: Format Check
+        run: tofu fmt -check -recursive
+
+      - name: Init
+        run: tofu init -backend=false
+
+      - name: Validate
+        run: tofu validate
+
+      - name: Checkov Security Scan
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: .
+          framework: terraform
+          quiet: true
+          soft_fail: false
+
+      - name: Trivy Security Scan
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: config
+          scan-ref: .
+          exit-code: "1"
+          severity: HIGH,CRITICAL
