@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tofu init:*)",
+      "Bash(tofu validate:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(tofu fmt:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nFix Checkov security scan failures\n\n- CKV_AWS_158: Add optional KMS encryption for CloudWatch log group\n  via enable_query_log_encryption variable \\(default false\\)\n- CKV_AWS_338: Change query_log_retention_days default from 30 to 365\n- CKV2_AWS_23: Add alias A record support via a_alias_records variable\n  for pointing to AWS resources \\(ALB, CloudFront, etc.\\)\nEOF\n\\)\")",
+      "Bash(git push)",
+      "Bash(git ls-remote:*)"
+    ]
+  }
+}

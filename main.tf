@@ -138,7 +138,7 @@ data "aws_iam_policy_document" "query_log_kms" {
 }
 
 module "query_log_kms_key" {
-  source = "git::https://github.com/Im5tu/opentofu-aws-kms-key.git?ref=1.0.0"
+  source = "git::https://github.com/Im5tu/opentofu-aws-kms-key.git?ref=693ded6a9b71a3ad71b006b86cd381979b196304"
   count  = var.enable_query_logging && var.enable_query_log_encryption ? 1 : 0
 
   providers = {

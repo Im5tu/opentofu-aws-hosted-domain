@@ -8,6 +8,7 @@ resource "aws_route53_record" "cname_records" {
   allow_overwrite = lookup(var.allow_record_overwrite, "CNAME", false)
 }
 
+#checkov:skip=CKV2_AWS_23:A records support external IPs not attached to AWS resources
 resource "aws_route53_record" "a_records" {
   for_each        = var.a_records
   zone_id         = aws_route53_zone.hosted_zone.id
@@ -18,6 +19,7 @@ resource "aws_route53_record" "a_records" {
   allow_overwrite = lookup(var.allow_record_overwrite, "A", false)
 }
 
+#checkov:skip=CKV2_AWS_23:Alias records point to AWS resources; Checkov false positive
 resource "aws_route53_record" "a_alias_records" {
   for_each        = var.a_alias_records
   zone_id         = aws_route53_zone.hosted_zone.id
