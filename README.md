@@ -111,7 +111,7 @@ provider "aws" {
 |------|-------------|------|---------|:--------:|
 | domain_name | The domain name for the hosted zone | `string` | n/a | yes |
 | enable_dnssec | Flag to enable or disable DNSSEC | `bool` | `true` | no |
-| parent_zone | The ID of the zone that this hosted zone belongs to | `string` | `null` | no |
+| parent_zone | The ID of the parent zone for NS/DS delegation. When set, domain_name must be a subdomain of the parent zone. | `string` | `null` | no |
 | cname_records | CNAME records to add to the domain | `map(set(string))` | `{}` | no |
 | a_records | A records to add to the domain | `map(set(string))` | `{}` | no |
 | a_alias_records | Alias A records pointing to AWS resources (ALB, CloudFront, etc.) | `map(object)` | `{}` | no |

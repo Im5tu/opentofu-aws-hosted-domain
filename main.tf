@@ -14,6 +14,13 @@ resource "aws_route53_record" "parent_ns" {
   type    = "NS"
   ttl     = 300
   records = aws_route53_zone.hosted_zone.name_servers
+
+  lifecycle {
+    precondition {
+      condition     = endswith(var.domain_name, ".${data.aws_route53_zone.parent[0].name}")
+      error_message = "domain_name '${var.domain_name}' must be a subdomain of parent zone '${data.aws_route53_zone.parent[0].name}' (e.g., 'sub.${data.aws_route53_zone.parent[0].name}')"
+    }
+  }
 }
 
 
@@ -108,6 +115,13 @@ resource "aws_route53_record" "parent_ds" {
   type    = "DS"
   ttl     = 300
   records = [aws_route53_key_signing_key.key_signing[0].ds_record]
+
+  lifecycle {
+    precondition {
+      condition     = endswith(var.domain_name, ".${data.aws_route53_zone.parent[0].name}")
+      error_message = "domain_name '${var.domain_name}' must be a subdomain of parent zone '${data.aws_route53_zone.parent[0].name}' (e.g., 'sub.${data.aws_route53_zone.parent[0].name}')"
+    }
+  }
 }
 
 

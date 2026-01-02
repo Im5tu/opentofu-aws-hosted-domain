@@ -10,7 +10,7 @@ variable "enable_dnssec" {
 }
 
 variable "parent_zone" {
-  description = "The ID of the zone that this hosted zone belongs to"
+  description = "The ID of the parent zone for NS/DS delegation. When set, domain_name must be a subdomain of the parent zone (e.g., if parent zone is 'example.com', domain_name must be 'sub.example.com')."
   type        = string
   default     = null
 }
