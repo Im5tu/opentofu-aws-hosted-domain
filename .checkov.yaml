@@ -1,0 +1,2 @@
+skip-check:
+  - CKV2_AWS_23  # Route53 A Record has Attached Resource - module supports external IPs and alias records
