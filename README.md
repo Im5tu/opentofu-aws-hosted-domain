@@ -33,12 +33,19 @@ module "hosted_zone" {
 
   # Query logging
   enable_query_logging     = true
-  query_log_retention_days = 30
+  query_log_retention_days = 365
 
   # DNS records
   a_records = {
     ""    = ["192.0.2.1"]
     "www" = ["192.0.2.1"]
+  }
+
+  a_alias_records = {
+    "" = {
+      zone_id = "Z2FDTNDATAQYW2"  # CloudFront hosted zone ID
+      name    = "d123456.cloudfront.net"
+    }
   }
 
   cname_records = {
@@ -107,11 +114,13 @@ provider "aws" {
 | parent_zone | The ID of the zone that this hosted zone belongs to | `string` | `null` | no |
 | cname_records | CNAME records to add to the domain | `map(set(string))` | `{}` | no |
 | a_records | A records to add to the domain | `map(set(string))` | `{}` | no |
+| a_alias_records | Alias A records pointing to AWS resources (ALB, CloudFront, etc.) | `map(object)` | `{}` | no |
 | txt_records | TXT records to add to the domain | `map(set(string))` | `{}` | no |
 | mx_records | MX records to add to the domain | `map(list(string))` | `{}` | no |
 | caa_records | CAA records to add to the domain | `map(object({flags,tag,value}))` | `{}` | no |
 | enable_query_logging | Enable Route53 query logging to CloudWatch Logs | `bool` | `true` | no |
-| query_log_retention_days | Number of days to retain Route53 query logs in CloudWatch | `number` | `30` | no |
+| enable_query_log_encryption | Enable KMS encryption for Route53 query logs CloudWatch log group | `bool` | `false` | no |
+| query_log_retention_days | Number of days to retain Route53 query logs in CloudWatch | `number` | `365` | no |
 | kms_key_administrators | Additional IAM ARNs that should have administrator access to the DNSSEC KMS key | `list(string)` | `[]` | no |
 | allow_record_overwrite | Map of record types to overwrite permission (CNAME, A, TXT, MX, CAA) | `map(bool)` | `{}` | no |
 

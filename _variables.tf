@@ -27,6 +27,16 @@ variable "a_records" {
   default     = {}
 }
 
+variable "a_alias_records" {
+  description = "Alias A records pointing to AWS resources (ALB, CloudFront, etc.)"
+  type = map(object({
+    zone_id                = string
+    name                   = string
+    evaluate_target_health = optional(bool, true)
+  }))
+  default = {}
+}
+
 variable "txt_records" {
   description = "TXT records to add to the domain"
   type        = map(set(string))
@@ -55,10 +65,16 @@ variable "enable_query_logging" {
   default     = true
 }
 
+variable "enable_query_log_encryption" {
+  description = "Enable KMS encryption for Route53 query logs CloudWatch log group"
+  type        = bool
+  default     = false
+}
+
 variable "query_log_retention_days" {
   description = "Number of days to retain Route53 query logs in CloudWatch"
   type        = number
-  default     = 30
+  default     = 365
 }
 
 variable "kms_key_administrators" {

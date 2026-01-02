@@ -112,12 +112,51 @@ resource "aws_route53_record" "parent_ds" {
 
 
 # Route53 Query Logging (CKV2_AWS_39 compliance)
+data "aws_iam_policy_document" "query_log_kms" {
+  count = var.enable_query_logging && var.enable_query_log_encryption ? 1 : 0
+
+  statement {
+    sid    = "AllowCloudWatchLogs"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["logs.us-east-1.amazonaws.com"]
+    }
+    actions = [
+      "kms:Encrypt",
+      "kms:Decrypt",
+      "kms:GenerateDataKey*",
+      "kms:DescribeKey"
+    ]
+    resources = ["*"]
+    condition {
+      test     = "ArnLike"
+      variable = "kms:EncryptionContext:aws:logs:arn"
+      values   = ["arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:log-group:/aws/route53/${var.domain_name}"]
+    }
+  }
+}
+
+module "query_log_kms_key" {
+  source = "git::https://github.com/Im5tu/opentofu-aws-kms-key.git?ref=1.0.0"
+  count  = var.enable_query_logging && var.enable_query_log_encryption ? 1 : 0
+
+  providers = {
+    aws = aws.global
+  }
+
+  name        = "route53-query-log-${replace(var.domain_name, ".", "-")}"
+  description = "KMS key for Route53 query logging: ${var.domain_name}"
+  policy      = data.aws_iam_policy_document.query_log_kms[0].json
+}
+
 resource "aws_cloudwatch_log_group" "route53_query_log" {
   provider = aws.global
   count    = var.enable_query_logging ? 1 : 0
 
   name              = "/aws/route53/${var.domain_name}"
   retention_in_days = var.query_log_retention_days
+  kms_key_id        = var.enable_query_log_encryption ? module.query_log_kms_key[0].key_arn : null
 }
 
 resource "aws_cloudwatch_log_resource_policy" "route53_query_log" {

@@ -18,6 +18,20 @@ resource "aws_route53_record" "a_records" {
   allow_overwrite = lookup(var.allow_record_overwrite, "A", false)
 }
 
+resource "aws_route53_record" "a_alias_records" {
+  for_each        = var.a_alias_records
+  zone_id         = aws_route53_zone.hosted_zone.id
+  name            = each.key
+  type            = "A"
+  allow_overwrite = lookup(var.allow_record_overwrite, "A", false)
+
+  alias {
+    zone_id                = each.value.zone_id
+    name                   = each.value.name
+    evaluate_target_health = each.value.evaluate_target_health
+  }
+}
+
 resource "aws_route53_record" "txt_records" {
   for_each        = var.txt_records
   zone_id         = aws_route53_zone.hosted_zone.id
