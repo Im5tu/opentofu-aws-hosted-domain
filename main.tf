@@ -34,10 +34,10 @@ resource "aws_kms_key" "dnssec_key" {
         Sid    = "AllowCurrentUserAndRootManagement"
         Effect = "Allow"
         Principal = {
-          AWS = [
-            "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root",
-            "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/InfrastructureDeployer"
-          ]
+          AWS = concat(
+            ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"],
+            var.kms_key_administrators
+          )
         }
         Action = [
           "kms:*"
@@ -108,4 +108,47 @@ resource "aws_route53_record" "parent_ds" {
   type    = "DS"
   ttl     = 300
   records = [aws_route53_key_signing_key.key_signing[0].ds_record]
+}
+
+
+# Route53 Query Logging (CKV2_AWS_39 compliance)
+resource "aws_cloudwatch_log_group" "route53_query_log" {
+  provider = aws.global
+  count    = var.enable_query_logging ? 1 : 0
+
+  name              = "/aws/route53/${var.domain_name}"
+  retention_in_days = var.query_log_retention_days
+}
+
+resource "aws_cloudwatch_log_resource_policy" "route53_query_log" {
+  provider = aws.global
+  count    = var.enable_query_logging ? 1 : 0
+
+  policy_name = "route53-query-logging-${replace(var.domain_name, ".", "-")}"
+  policy_document = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "Route53QueryLogging"
+        Effect = "Allow"
+        Principal = {
+          Service = "route53.amazonaws.com"
+        }
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "${aws_cloudwatch_log_group.route53_query_log[0].arn}:*"
+      }
+    ]
+  })
+}
+
+resource "aws_route53_query_log" "query_log" {
+  count = var.enable_query_logging ? 1 : 0
+
+  cloudwatch_log_group_arn = aws_cloudwatch_log_group.route53_query_log[0].arn
+  zone_id                  = aws_route53_zone.hosted_zone.zone_id
+
+  depends_on = [aws_cloudwatch_log_resource_policy.route53_query_log]
 }

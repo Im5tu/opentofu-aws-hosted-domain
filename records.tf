@@ -5,7 +5,7 @@ resource "aws_route53_record" "cname_records" {
   type            = "CNAME"
   records         = each.value
   ttl             = 300
-  allow_overwrite = true
+  allow_overwrite = lookup(var.allow_record_overwrite, "CNAME", false)
 }
 
 resource "aws_route53_record" "a_records" {
@@ -15,7 +15,7 @@ resource "aws_route53_record" "a_records" {
   type            = "A"
   records         = each.value
   ttl             = 300
-  allow_overwrite = true
+  allow_overwrite = lookup(var.allow_record_overwrite, "A", false)
 }
 
 resource "aws_route53_record" "txt_records" {
@@ -25,7 +25,7 @@ resource "aws_route53_record" "txt_records" {
   type            = "TXT"
   records         = each.value
   ttl             = 300
-  allow_overwrite = true
+  allow_overwrite = lookup(var.allow_record_overwrite, "TXT", false)
 }
 
 resource "aws_route53_record" "mx_records" {
@@ -35,7 +35,7 @@ resource "aws_route53_record" "mx_records" {
   type            = "MX"
   records         = each.value
   ttl             = 300
-  allow_overwrite = true
+  allow_overwrite = lookup(var.allow_record_overwrite, "MX", false)
 }
 
 resource "aws_route53_record" "caa_records" {
@@ -44,7 +44,7 @@ resource "aws_route53_record" "caa_records" {
   name            = each.key
   type            = "CAA"
   ttl             = 300
-  allow_overwrite = true
+  allow_overwrite = lookup(var.allow_record_overwrite, "CAA", false)
 
   records = [
     "${each.value.flags} ${each.value.tag} \"${each.value.value}\""

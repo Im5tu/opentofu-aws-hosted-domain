@@ -1,8 +1,10 @@
 module "example" {
   source = "../.."
 
-  # TODO: Add required variables
-  tags = {
-    Environment = "example"
+  domain_name = "example.com"
+
+  providers = {
+    aws        = aws
+    aws.global = aws.us-east-1
   }
 }

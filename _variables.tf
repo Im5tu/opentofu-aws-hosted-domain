@@ -48,3 +48,27 @@ variable "caa_records" {
   }))
   default = {}
 }
+
+variable "enable_query_logging" {
+  description = "Enable Route53 query logging to CloudWatch Logs"
+  type        = bool
+  default     = true
+}
+
+variable "query_log_retention_days" {
+  description = "Number of days to retain Route53 query logs in CloudWatch"
+  type        = number
+  default     = 30
+}
+
+variable "kms_key_administrators" {
+  description = "Additional IAM ARNs that should have administrator access to the DNSSEC KMS key. The account root is always included."
+  type        = list(string)
+  default     = []
+}
+
+variable "allow_record_overwrite" {
+  description = "Map of record types to overwrite permission. Valid keys: CNAME, A, TXT, MX, CAA. Unspecified types default to false."
+  type        = map(bool)
+  default     = {}
+}
