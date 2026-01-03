@@ -8,7 +8,7 @@ OpenTofu module for managing AWS Route53 hosted zones with DNSSEC, query logging
 
 ```hcl
 module "hosted_zone" {
-  source = "git::https://github.com/im5tu/opentofu-aws-hosted-domain.git?ref=main"
+  source = "git::https://github.com/im5tu/opentofu-aws-hosted-domain.git?ref=8cf8e5f48942f14a3a1f6f465f3467fddcf78d2c"
 
   domain_name = "example.com"
 
@@ -23,7 +23,7 @@ module "hosted_zone" {
 
 ```hcl
 module "hosted_zone" {
-  source = "git::https://github.com/im5tu/opentofu-aws-hosted-domain.git?ref=main"
+  source = "git::https://github.com/im5tu/opentofu-aws-hosted-domain.git?ref=8cf8e5f48942f14a3a1f6f465f3467fddcf78d2c"
 
   domain_name = "example.com"
 
